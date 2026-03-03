@@ -236,7 +236,7 @@ Includes:
 
 ---
 
-# 🧠 Design Philosophy – First Approach
+# 🧠 Design Philosophy – Second Approach
 
 This first approach focuses on:
 
@@ -281,5 +281,6 @@ This project showcases practical implementation of:
 - Event matching
 - Registration tracking
 - Psychological marketing automation
+
 
 Built using automation-first principles.
