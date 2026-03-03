@@ -1,0 +1,861 @@
+{
+  "name": "AI Event Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }} ||{{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "=You are a friendly and helpful AI Event Assistant. Your goal is to help users discover events that match their interests.\n\nYou have access to two tools:\n- \"User Details\" tool (GoogleSheets1): Contains registered user data with columns: Name, Email, Year, Interests\n- \"Event Details\" tool (GoogleSheets): Contains event data with columns: Event Name, Field, Date, Location, Description\n\nFollow these steps IN ORDER and do NOT repeat a step once completed in this conversation:\n\n---\n\nSTEP 1 — Ask for the user's name (ONLY if you haven't already done so this session):\n- Say: \"Hi there! 😊 I'm your Event Assistant. I can help you find events that match your interests. What is your name?\"\n- Wait for the user's response before proceeding.\n\n---\n\nSTEP 2 — Look up the user in the User Details sheet:\n- Use the \"User Details\" tool to search for the user by their name.\n- If the user IS found:\n  → Greet them by name and confirm their listed field(s) of interest.\n  → Say: \"Hi [Name]! 😊 I can see you're already in our system. Your field of interest is listed as [Interest]. Is that correct? (yes/no)\"\n  → Wait for confirmation.\n  → If they say YES → go to STEP 3 immediately.\n  → If they say NO → ask: \"What is your actual field of interest?\" then go to STEP 3 with the updated interest.\n- If the user is NOT found:\n  → Say: \"Welcome! I don't see you in our system yet. What is your field of interest? (For example: AI, Robotics, Coding, Business, Design, etc.)\"\n  → Wait for their response, then go to STEP 3.\n\n---\n\nSTEP 3 — Search for matching events:\n- Use the \"Event Details\" tool to retrieve all rows from the events sheet.\n- Filter results where the \"Field\" column matches the user's field of interest (case-insensitive).\n- If matching events are found:\n  → Present them in a clear, friendly format:\n  \"Here are some events that match your interest in [Field]: ✨\n\n  📅 [Event Name]\n  📍 Location: [Location]\n  🗓️ Date: [Date]\n  📝 [Description]\"\n  → List ALL matching events.\n  → End with: \"Would you like more details about any of these events, or can I help you with anything else?\"\n- If NO matching events are found:\n  → Say: \"I'm sorry, I couldn't find any events matching [Field] right now. Would you like to explore events in a different field?\"\n\n---\n\nIMPORTANT RULES:\n- NEVER repeat a step that has already been completed in this conversation.\n- NEVER ask for the user's name again once you have it.\n- NEVER ask for their field of interest again once confirmed.\n- Always be friendly, concise, and use emojis sparingly for warmth.\n- If the user asks something unrelated to events, politely redirect them back to event discovery."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        800,
+        -368
+      ],
+      "id": "430698b1-5ef7-4c58-8d41-b685e46a0269",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -144
+      ],
+      "id": "080652f2-77ec-4a5a-87bb-a1fb2518f799",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "5yNwGajXt6xovHk2",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1QP4XWSKPaqCLzPxO2BSHUFZ9icpjSTsnKoMInWRrLaQ",
+          "mode": "list",
+          "cachedResultName": "Hushh Test Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QP4XWSKPaqCLzPxO2BSHUFZ9icpjSTsnKoMInWRrLaQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QP4XWSKPaqCLzPxO2BSHUFZ9icpjSTsnKoMInWRrLaQ/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        848,
+        -144
+      ],
+      "id": "315126fd-3ffe-4577-88a6-34f4dbcc3489",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4fBEGR1liJX7shYc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zR4ePegiMnI8wO_SIXYeQB345x5wzmOStVGEQ8tMuQs",
+          "mode": "list",
+          "cachedResultName": "User Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zR4ePegiMnI8wO_SIXYeQB345x5wzmOStVGEQ8tMuQs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zR4ePegiMnI8wO_SIXYeQB345x5wzmOStVGEQ8tMuQs/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1008,
+        -144
+      ],
+      "id": "ff08e2f8-d276-40f4-8b7c-299108c2c27a",
+      "name": "Get row(s) in sheet in Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4fBEGR1liJX7shYc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "signupstud",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        320
+      ],
+      "id": "a3717288-737d-401d-b3aa-9416a2134ec3",
+      "name": "Webhook1",
+      "webhookId": "c2a12153-7e32-46f7-b8cd-85440fbfc8be"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1zR4ePegiMnI8wO_SIXYeQB345x5wzmOStVGEQ8tMuQs",
+          "mode": "list",
+          "cachedResultName": "User Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zR4ePegiMnI8wO_SIXYeQB345x5wzmOStVGEQ8tMuQs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zR4ePegiMnI8wO_SIXYeQB345x5wzmOStVGEQ8tMuQs/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name ": "={{ $json.body.name }}",
+            "Year": "={{ $json.body.classYear }}",
+            "Email": "={{ $json.body.email }}",
+            "Interests": "={{ $json.body.interests }}",
+            "Password": "={{ $json.body.password }}"
+          },
+          "matchingColumns": [
+            "Name "
+          ],
+          "schema": [
+            {
+              "id": "Name ",
+              "displayName": "Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Year",
+              "displayName": "Year",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Interests",
+              "displayName": "Interests",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Password",
+              "displayName": "Password",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        320
+      ],
+      "id": "af6912d5-9cba-43c1-abfa-20e0bd461ab6",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4fBEGR1liJX7shYc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        624,
+        320
+      ],
+      "id": "98925f0e-46a7-4ae3-bc2a-0bbc878ab553",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "add-event",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1040,
+        320
+      ],
+      "id": "9b5b6d9f-9ff6-4287-87e1-87342608c39b",
+      "name": "Webhook2",
+      "webhookId": "ff4d2b3d-0c50-421d-9f1b-b430dbb33038"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1QP4XWSKPaqCLzPxO2BSHUFZ9icpjSTsnKoMInWRrLaQ",
+          "mode": "list",
+          "cachedResultName": "Hushh Test Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QP4XWSKPaqCLzPxO2BSHUFZ9icpjSTsnKoMInWRrLaQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QP4XWSKPaqCLzPxO2BSHUFZ9icpjSTsnKoMInWRrLaQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Title ": "={{ $json.body.title }}",
+            "Venue": "={{ $json.body.venue }}",
+            "Time ": "={{ $json.body.time }}",
+            "Date ": "={{ $json.body.date }}",
+            "Description": "={{ $json.body.description }}"
+          },
+          "matchingColumns": [
+            "Title "
+          ],
+          "schema": [
+            {
+              "id": "Title ",
+              "displayName": "Title ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date ",
+              "displayName": "Date ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Time ",
+              "displayName": "Time ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Venue",
+              "displayName": "Venue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1280,
+        320
+      ],
+      "id": "2e2af087-118b-430a-8658-340ce4935ab0",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4fBEGR1liJX7shYc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "hush",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        560,
+        -368
+      ],
+      "id": "0bbc95b1-54e4-45f4-b4f3-3f9c91a03da2",
+      "name": "Webhook",
+      "webhookId": "675e205f-28e7-4d08-afeb-53c04398bd6b"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        784
+      ],
+      "id": "650e7edc-5b5d-46c2-b0fd-e87b7405aa6b",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1fWPRludrs9fWarpSnCgfzC7SzzBQTc61M3bN8mNPHUM",
+          "mode": "list",
+          "cachedResultName": "Registered Event List Count",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fWPRludrs9fWarpSnCgfzC7SzzBQTc61M3bN8mNPHUM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fWPRludrs9fWarpSnCgfzC7SzzBQTc61M3bN8mNPHUM/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        512,
+        656
+      ],
+      "id": "b85500b3-5ffe-486f-9afc-0305697ebf73",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4fBEGR1liJX7shYc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zR4ePegiMnI8wO_SIXYeQB345x5wzmOStVGEQ8tMuQs",
+          "mode": "list",
+          "cachedResultName": "User Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zR4ePegiMnI8wO_SIXYeQB345x5wzmOStVGEQ8tMuQs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zR4ePegiMnI8wO_SIXYeQB345x5wzmOStVGEQ8tMuQs/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        512,
+        848
+      ],
+      "id": "dc25e206-388a-4ad7-b068-3448af77ea71",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4fBEGR1liJX7shYc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": " IntrestField",
+              "field2": "Interests"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1040,
+        768
+      ],
+      "id": "6a84e136-2cde-49a9-99f2-64879c36daaf",
+      "name": "Merge",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $input.all();\nconst results = [];\n\nfor (const item of allItems) {\n  let interests = item.json.Interests;\n\n  // Convert string array like '[\"Coding\",\"AI\"]'\n  if (typeof interests === \"string\" && interests.startsWith(\"[\")) {\n    try {\n      interests = JSON.parse(interests);\n    } catch {\n      interests = [interests];\n    }\n  }\n\n  // Convert comma-separated values\n  if (typeof interests === \"string\") {\n    interests = interests.split(\",\");\n  }\n\n  // Ensure array\n  if (!Array.isArray(interests)) {\n    interests = [interests];\n  }\n\n  // Create one output per interest\n  for (let interest of interests) {\n    results.push({\n      json: {\n        ...item.json,\n        Interests: interest.trim()\n      }\n    });\n  }\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        784,
+        848
+      ],
+      "id": "a3ee1aae-a91f-499d-b0a9-b57c8da37fcf",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "038ca8d6-b58e-4a8b-9b61-6acd47144a32",
+              "leftValue": "={{ $json.RegisterdCount }}",
+              "rightValue": 35,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        1248,
+        768
+      ],
+      "id": "8e9d6684-c188-43c1-a0a7-cc2e4eb97c83",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json['Name '] }}{{ $json.Interests }}{{ $('Merge').item.json[' IntrestField'] }}{{ $('Merge').item.json.RegisterdCount }}",
+        "options": {
+          "systemMessage": "=You are an AI email assistant.\n\nYour job is to generate a personalized and friendly email for students to encourage them to join an event.\n\nYou will receive the following information:\n- Student name\n- Event name\n- Number of students already registered\n- Student interest field\n\nYour task:\nCreate an attractive and engaging email.\n\nIMPORTANT:\nYou must ONLY respond in valid JSON format.\nDo not add any extra text, explanation, or formatting.\n\nThe JSON must contain ONLY these two fields:\n1. subject\n2. body\n\nThe subject must be short, catchy, and personalized.\n\nThe body must:\n- Be friendly and motivating\n- Mention the student name\n- Mention the event name\n- Mention the number of students registered\n- Create a sense of urgency or excitement\n- Encourage the student to register\n\nExample format:\n\n{\n  \"subject\": \"Everyone in AI is joining this event!\",\n  \"body\": \"Hi Krish, did you know that 45 students have already registered for the AI Workshop? This is a great opportunity to learn and network. Don’t miss your chance. Register now!\"\n}\n\nAlways follow this format strictly."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1424,
+        768
+      ],
+      "id": "2fd6553d-3b31-4a19-b53f-4e7eea57aaf9",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        928
+      ],
+      "id": "462432ab-a585-43e5-aa8a-12c4b60e3caa",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "c98jm4C4i3bZNwF8",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "krishaiofficial25@gmail.com",
+        "subject": "Alert",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1760,
+        768
+      ],
+      "id": "1b03db84-0be2-4f15-9c89-65d9e0eb5e48",
+      "name": "Send a message",
+      "webhookId": "4774e9a3-dd40-4f6c-9b5a-4649063f480f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "44Fa3MkTVezm7QIk",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## WebHook to Append the User Details in the  Google Sheets\n",
+        "height": 128,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        320
+      ],
+      "id": "72dac4a6-5dfa-4a30-8061-bd3ac2d04850",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## WebHook to Append the Event Details in the  Google Sheets\n",
+        "height": 128,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        160
+      ],
+      "id": "218cedb0-5d65-4367-aeba-5fd611a1fe01",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Guilt Trap",
+        "height": 80,
+        "width": 150,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        1040
+      ],
+      "id": "190c5f0d-cb0f-4a8a-b41e-19e1aca986cd",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Kai ChatBot for registration",
+        "height": 80
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        704,
+        -464
+      ],
+      "id": "39e94490-adb3-4116-85da-e87b368a82de",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1152,
+        -368
+      ],
+      "id": "dbd12da5-0a07-40f0-b5a9-5ce5b4c1ca14",
+      "name": "Respond to Webhook1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook2": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet1": {
+      "main": [
+        []
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "42531cd8-5b2e-4cca-ba65-c97c6af57537",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5aaf791f63151f39af861cd7e69c335b64c8660b02bc9c7d472f5d705a2ee4a0"
+  },
+  "id": "XFJQhzsWfqEtzqT6",
+  "tags": []
+}
