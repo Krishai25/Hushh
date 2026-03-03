@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Kai Campus Hub</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Layout ── */
+    body {
+      overflow-x: hidden;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 260px 1fr 300px;
+      grid-template-rows: 65px 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      grid-row: 1 / -1;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      padding: 20px 24px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-nav {
+      padding: 16px 12px;
+      flex: 1;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      margin-bottom: 2px;
+    }
+
+    .nav-item:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: rgba(108, 99, 255, 0.12);
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .nav-icon {
+      font-size: 1.1rem;
+      width: 22px;
+      text-align: center;
+    }
+
+    .sidebar-user {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .user-info {
+      min-width: 0;
+    }
+
+    .user-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-class {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Top Bar ── */
+    .topbar {
+      grid-column: 2 / -1;
+      background: rgba(10, 11, 16, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      gap: 16px;
+    }
+
+    .topbar-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* ── Main Panel ── */
+    .main {
+      grid-column: 2;
+      grid-row: 2;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 16px 24px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      padding: 10px 18px;
+      border-radius: 8px 8px 0 0;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text-dim);
+      transition: var(--transition);
+      border: none;
+      background: none;
+    }
+
+    .tab.active {
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent);
+      background: rgba(108, 99, 255, 0.05);
+    }
+
+    /* ── Chat ── */
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .msg {
+      display: flex;
+      gap: 12px;
+      max-width: 75%;
+      animation: fadeUp 0.3s ease;
+    }
+
+    .msg.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .msg-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .msg.ai .msg-avatar {
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    }
+
+    .msg.user .msg-avatar {
+      background: linear-gradient(135deg, var(--accent2), #f59e0b);
+    }
+
+    .msg-bubble {
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .msg.ai .msg-bubble {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top-left-radius: 4px;
+    }
+
+    .msg.user .msg-bubble {
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      color: #fff;
+      border-top-right-radius: 4px;
+    }
+
+    .msg-bubble .event-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .event-mini {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .event-mini-info {
+      min-width: 0;
+    }
+
+    .event-mini-title {
+      font-weight: 600;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .event-mini-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .chat-input-area {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .quick-prompts {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .quick-btn {
+      font-size: 0.78rem;
+      padding: 6px 12px;
+      border-radius: 50px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .quick-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition);
+      resize: none;
+      line-height: 1.5;
+    }
+
+    .chat-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--glow);
+    }
+
+    .send-btn {
+      background: var(--accent);
+      border: none;
+      border-radius: 12px;
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .send-btn:hover {
+      background: #5a52d5;
+    }
+
+    /* ── Events Tab ── */
+    .events-grid {
+      padding: 24px;
+      display: grid;
+      gap: 16px;
+      overflow-y: auto;
+      grid-template-columns: 1fr;
+    }
+
+    .event-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      transition: var(--transition);
+    }
+
+    .event-card:hover {
+      border-color: rgba(108, 99, 255, 0.3);
+    }
+
+    .event-card-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .event-card-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 6px;
+    }
+
+    .event-card-meta {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .event-card-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .join-btns {
+      display: flex;
+      gap: 8px;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    /* ── Right Panel ── */
+    .right-panel {
+      grid-row: 2;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel-section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+    }
+
+    /* ── Gamification Panel ── */
+    .xp-bar-wrap {
+      margin-bottom: 4px;
+    }
+
+    .xp-bar-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .xp-bar {
+      height: 8px;
+      border-radius: 4px;
+      background: var(--surface2);
+      overflow: hidden;
+    }
+
+    .xp-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--accent), #8b5cf6);
+      transition: width 1s ease;
+    }
+
+    .badge-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .badge-item {
+      text-align: center;
+      padding: 10px;
+      border-radius: 10px;
+      flex: 1;
+      min-width: 70px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      transition: var(--transition);
+    }
+
+    .badge-item.earned {
+      border-color: var(--accent4);
+      background: rgba(255, 209, 102, 0.08);
+    }
+
+    .badge-item.locked {
+      opacity: 0.4;
+    }
+
+    .badge-emoji {
+      font-size: 1.5rem;
+    }
+
+    .badge-name {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    /* ── Mini Calendar ── */
+    .mini-cal {
+      font-size: 0.85rem;
+    }
+
+    .cal-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .cal-nav button {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 10px;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+      text-align: center;
+    }
+
+    .cal-day-name {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      padding: 4px 0;
+    }
+
+    .cal-day {
+      padding: 5px 0;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-dim);
+      transition: var(--transition);
+    }
+
+    .cal-day:hover {
+      background: var(--surface2);
+    }
+
+    .cal-day.today {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      border-radius: 50%;
+    }
+
+    .cal-day.has-event::after {
+      content: '·';
+      display: block;
+      color: var(--accent3);
+      font-size: 1rem;
+      line-height: 0.4;
+    }
+
+    .cal-day.empty {
+      cursor: default;
+    }
+
+    /* ── Clubs Panel ── */
+    .club-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .club-item:last-child {
+      border-bottom: none;
+    }
+
+    .club-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #2a2d3a, #3a3d50);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .club-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .club-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .club-members {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Responsive ── */
+    @media(max-width:900px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: 65px 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .topbar {
+        grid-column: 1;
+      }
+
+      .main {
+        grid-column: 1;
+      }
+
+      .right-panel {
+        display: none;
+      }
+    }
+
+    /* ── typing indicator ── */
+    .typing .msg-bubble {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      padding: 14px 16px;
+    }
+
+    .typing-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      animation: typeBounce 1.2s infinite;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typeBounce {
+
+      0%,
+      60%,
+      100% {
+        transform: translateY(0)
+      }
+
+      30% {
+        transform: translateY(-6px)
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">⚡ Kai Campus</div>
+      <nav class="sidebar-nav">
+        <div class="nav-item active" onclick="switchTab('chat')"><span class="nav-icon">💬</span> AI Assistant</div>
+        <div class="nav-item" onclick="switchTab('events')"><span class="nav-icon">📅</span> Events</div>
+        <div class="nav-item" onclick="switchTab('clubs')"><span class="nav-icon">🏛</span> Clubs</div>
+        <a class="nav-item" href="calendar.html"><span class="nav-icon">🗓</span> Calendar</a>
+        <div class="nav-item" onclick="switchTab('badges')"><span class="nav-icon">🏆</span> My Badges</div>
+        <div style="height:1px;background:var(--border);margin:12px 0"></div>
+        <div class="nav-item" onclick="logout()"><span class="nav-icon">🚪</span> Log Out</div>
+      </nav>
+      <div class="sidebar-user" id="sidebarUser">
+        <div class="user-avatar" id="userAvatarSide"></div>
+        <div class="user-info">
+          <div class="user-name" id="userNameSide">—</div>
+          <div class="user-class" id="userClassSide">—</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="topbar-title" id="tabTitle">💬 AI Assistant</div>
+      <div class="topbar-right">
+        <div class="streak-bar" id="streakBar">
+          <span class="streak-fire">🔥</span>
+          <span class="streak-count" id="streakCount">0</span>
+          <span style="color:var(--text-muted);font-size:0.8rem">day streak</span>
+        </div>
+        <div class="xp-pill" id="xpPill">0 XP</div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- CHAT TAB -->
+      <div id="tabChat" style="display:flex;flex-direction:column;height:100%">
+        <div class="tabs">
+          <button class="tab active" onclick="switchTab('chat')">💬 Chat</button>
+          <button class="tab" onclick="switchTab('events')">📅 Events</button>
+          <button class="tab" onclick="switchTab('clubs')">🏛 Clubs</button>
+        </div>
+        <div class="chat-area" id="chatArea"></div>
+        <div class="chat-input-area">
+          <div class="quick-prompts">
+            <button class="quick-btn" onclick="sendQuick('What events are happening this week?')">📅 This week's
+              events</button>
+            <button class="quick-btn" onclick="sendQuick('Which clubs match my interests?')">🏛 Matching clubs</button>
+            <button class="quick-btn" onclick="sendQuick('Show me upcoming deadlines')">⏰ Deadlines</button>
+            <button class="quick-btn" onclick="sendQuick('How do I earn more XP?')">⚡ Earn XP</button>
+          </div>
+          <div class="input-row">
+            <textarea class="chat-input" id="chatInput" rows="1"
+              placeholder="Ask anything about events, clubs, deadlines…" onkeydown="handleKey(event)"></textarea>
+            <button class="send-btn" onclick="sendMessage()">↑</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- EVENTS TAB -->
+      <div id="tabEvents" style="display:none;height:100%;overflow:hidden;flex-direction:column">
+        <div class="tabs">
+          <button class="tab" onclick="switchTab('chat')">💬 Chat</button>
+          <button class="tab active" onclick="switchTab('events')">📅 Events</button>
+          <button class="tab" onclick="switchTab('clubs')">🏛 Clubs</button>
+        </div>
+        <div class="events-grid" id="eventsGrid">
+          <div style="color:var(--text-muted);padding:24px;text-align:center">Loading events…</div>
+        </div>
+      </div>
+
+      <!-- CLUBS TAB -->
+      <div id="tabClubs" style="display:none;height:100%;overflow:hidden;flex-direction:column">
+        <div class="tabs">
+          <button class="tab" onclick="switchTab('chat')">💬 Chat</button>
+          <button class="tab" onclick="switchTab('events')">📅 Events</button>
+          <button class="tab active" onclick="switchTab('clubs')">🏛 Clubs</button>
+        </div>
+        <div class="events-grid" id="clubsGrid">
+          <div style="color:var(--text-muted);padding:24px;text-align:center">Loading clubs…</div>
+        </div>
+      </div>
+
+      <!-- BADGES TAB -->
+      <div id="tabBadges" style="display:none;height:100%;overflow-y:auto;padding:24px">
+        <h2 style="font-family:'Syne',sans-serif;margin-bottom:20px">Your Achievements</h2>
+        <div id="badgesFull"></div>
+      </div>
+    </main>
+
+    <!-- Right Panel -->
+    <aside class="right-panel">
+      <!-- XP & Streak -->
+      <div>
+        <div class="panel-section-title">Progress</div>
+        <div class="xp-bar-wrap">
+          <div class="xp-bar-labels">
+            <span id="badgeCurrent">🌱 Newcomer</span>
+            <span id="badgeNext">⚡ Active →</span>
+          </div>
+          <div class="xp-bar">
+            <div class="xp-fill" id="xpFill" style="width:0%"></div>
+          </div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:6px" id="xpLabel">0 / 50 XP</div>
+        </div>
+      </div>
+
+      <!-- Mini Calendar -->
+      <div>
+        <div class="panel-section-title">Calendar</div>
+        <div class="mini-cal">
+          <div class="cal-nav">
+            <button onclick="calPrev()">‹</button>
+            <span id="calMonthLabel" style="font-weight:600;font-size:0.9rem"></span>
+            <button onclick="calNext()">›</button>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+      </div>
+
+      <!-- Badges mini -->
+      <div>
+        <div class="panel-section-title">Badges</div>
+        <div class="badge-grid" id="badgeMini"></div>
+      </div>
+
+      <!-- Matched Clubs -->
+      <div>
+        <div class="panel-section-title">Your Clubs</div>
+        <div id="clubsMini"></div>
+      </div>
+    </aside>
+
+  </div>
+
+  <script src="utils.js"></script>
+  <script>
+    // ─── AUTH CHECK ────────────────────────────────────────────
+    const user = Auth.require();
+    if (!user) throw new Error('Redirect');
+
+    // ─── INIT USER UI ──────────────────────────────────────────
+    const initials = user.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    document.getElementById('userAvatarSide').textContent = initials;
+    document.getElementById('userNameSide').textContent = user.name;
+    document.getElementById('userClassSide').textContent = user.classYear || '';
+
+    // ─── XP & STREAK ──────────────────────────────────────────
+    const streak = Gamification.updateStreak();
+    const xp = Gamification.getXP();
+    document.getElementById('streakCount').textContent = streak;
+    document.getElementById('xpPill').textContent = xp + ' XP';
+
+    // XP bar
+    const cur = Gamification.getCurrentBadge(xp);
+    const next = Gamification.getNextBadge(xp);
+    document.getElementById('badgeCurrent').textContent = cur.icon + ' ' + cur.label;
+    if (next) {
+      document.getElementById('badgeNext').textContent = next.icon + ' ' + next.label + ' →';
+      const pct = ((xp - cur.xp) / (next.xp - cur.xp)) * 100;
+      document.getElementById('xpFill').style.width = Math.min(pct, 100) + '%';
+      document.getElementById('xpLabel').textContent = xp + ' / ' + next.xp + ' XP';
+    } else {
+      document.getElementById('badgeNext').textContent = '🏆 Max rank!';
+      document.getElementById('xpFill').style.width = '100%';
+    }
+
+    // ─── BADGES ───────────────────────────────────────────────
+    function renderBadges(containerId) {
+      const el = document.getElementById(containerId);
+      el.innerHTML = '';
+      Gamification.BADGES.forEach(b => {
+        const earned = xp >= b.xp;
+        const d = document.createElement('div');
+        d.className = 'badge-item ' + (earned ? 'earned' : 'locked');
+        d.innerHTML = `<div class="badge-emoji">${b.icon}</div><div class="badge-name">${b.label}</div>`;
+        el.appendChild(d);
+      });
+    }
+    renderBadges('badgeMini');
+    renderBadges('badgesFull');
+
+    // ─── MINI CALENDAR ────────────────────────────────────────
+    let calDate = new Date();
+    const EVENT_DATES = [15, 18, 20, 22, 25, 28]; // mock
+
+    function renderCal() {
+      const y = calDate.getFullYear(), m = calDate.getMonth();
+      document.getElementById('calMonthLabel').textContent =
+        calDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      const grid = document.getElementById('calGrid');
+      grid.innerHTML = '';
+      ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].forEach(d => {
+        const el = document.createElement('div');
+        el.className = 'cal-day-name'; el.textContent = d; grid.appendChild(el);
+      });
+      const firstDay = new Date(y, m, 1).getDay();
+      const days = new Date(y, m + 1, 0).getDate();
+      const today = new Date();
+      for (let i = 0; i < firstDay; i++) {
+        const el = document.createElement('div'); el.className = 'cal-day empty'; grid.appendChild(el);
+      }
+      for (let d = 1; d <= days; d++) {
+        const el = document.createElement('div'); el.className = 'cal-day'; el.textContent = d;
+        if (d === today.getDate() && m === today.getMonth() && y === today.getFullYear()) el.classList.add('today');
+        if (EVENT_DATES.includes(d)) el.classList.add('has-event');
+        el.onclick = () => showToast(`Events on ${d} ${calDate.toLocaleDateString('en-US', { month: 'short' })} →`, 'info');
+        grid.appendChild(el);
+      }
+    }
+    function calPrev() { calDate.setMonth(calDate.getMonth() - 1); renderCal(); }
+    function calNext() { calDate.setMonth(calDate.getMonth() + 1); renderCal(); }
+    renderCal();
+
+    // ─── CLUBS MINI ───────────────────────────────────────────
+    const interests = Array.isArray(user.interests) ? user.interests : (user.interests || '').split(',');
+    const matchedClubs = MOCK_CLUBS.filter(c => {
+      const tags = c.tags.toLowerCase();
+      return interests.some(i => tags.includes(i.toLowerCase()));
+    }).slice(0, 4);
+
+    const clubsMini = document.getElementById('clubsMini');
+    const CLUB_ICONS = ['💻', '🎨', '🗣', '💼', '📸', '🤖'];
+    (matchedClubs.length ? matchedClubs : MOCK_CLUBS.slice(0, 3)).forEach((c, i) => {
+      clubsMini.innerHTML += `
+    <div class="club-item">
+      <div class="club-avatar">${CLUB_ICONS[i % CLUB_ICONS.length]}</div>
+      <div class="club-info">
+        <div class="club-name">${c.name}</div>
+        <div class="club-members">Active club</div>
+      </div>
+    </div>`;
+    });
+
+    // ─── TABS ─────────────────────────────────────────────────
+    function switchTab(name) {
+      ['chat', 'events', 'clubs', 'badges'].forEach(t => {
+        const el = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+        if (el) el.style.display = t === name ? 'flex' : 'none';
+      });
+      const titles = { chat: '💬 AI Assistant', events: '📅 Events', clubs: '🏛 Clubs', badges: '🏆 My Badges' };
+      document.getElementById('tabTitle').textContent = titles[name] || '';
+      if (name === 'events') loadEvents();
+      if (name === 'clubs') loadClubs();
+    }
+
+    // ─── EVENTS ───────────────────────────────────────────────
+    async function loadEvents() {
+      let events = MOCK_EVENTS;
+      try {
+        const res = await apiPost({ action: 'getEvents', interests: interests.join(',') });
+        if (res.status === 'success' && res.data?.length) events = res.data;
+      } catch (e) { }
+      renderEvents(events);
+    }
+
+    function renderEvents(events) {
+      const grid = document.getElementById('eventsGrid');
+      grid.innerHTML = events.map(ev => {
+        const tags = (ev.tags || '').split(',').map(t => `<span class="badge badge-purple">${t.trim()}</span>`).join('');
+        const dt = ev.time ? new Date(ev.time).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'TBA';
+        return `
+      <div class="event-card">
+        <div class="event-card-info">
+          <div class="event-card-title">${ev.title}</div>
+          <div class="event-card-meta">
+            <span>🏛 ${ev.club || 'Campus'}</span>
+            <span>📍 ${ev.venue || 'TBA'}</span>
+            <span>🕐 ${dt}</span>
+          </div>
+          <div class="event-card-tags">${tags}</div>
+        </div>
+        <div class="join-btns">
+          ${ev.joinLink && ev.joinLink != '#' ? `<a href="${ev.joinLink}" target="_blank" class="btn btn-primary btn-sm">Join →</a>` : ''}
+          <button class="btn btn-secondary btn-sm" onclick="markInterested('${ev.id}','${ev.title}')">⭐ Interested</button>
+        </div>
+      </div>`;
+      }).join('');
+    }
+
+    function markInterested(id, title) {
+      Gamification.addXP(5);
+      document.getElementById('xpPill').textContent = Gamification.getXP() + ' XP';
+      showToast(`Marked interested in "${title}" +5 XP`, 'success');
+    }
+
+    // ─── CLUBS ────────────────────────────────────────────────
+    async function loadClubs() {
+      let clubs = MOCK_CLUBS;
+      try {
+        const res = await apiPost({ action: 'getClubs', interests: interests.join(',') });
+        if (res.status === 'success' && res.data?.length) clubs = res.data;
+      } catch (e) { }
+      renderClubs(clubs);
+    }
+
+    function renderClubs(clubs) {
+      const grid = document.getElementById('clubsGrid');
+      grid.innerHTML = clubs.map((c, i) => {
+        const tags = (c.tags || '').split(',').map(t => `<span class="badge badge-purple">${t.trim()}</span>`).join('');
+        return `
+      <div class="event-card">
+        <div class="event-card-info">
+          <div class="event-card-title">${CLUB_ICONS[i % CLUB_ICONS.length]} ${c.name}</div>
+          <div class="event-card-meta"><span>🏛 Student Club</span></div>
+          <p style="font-size:0.85rem;color:var(--text-dim);margin:8px 0">${c.description || ''}</p>
+          <div class="event-card-tags">${tags}</div>
+        </div>
+        <div class="join-btns">
+          <button class="btn btn-primary btn-sm" onclick="joinClub('${c.id}','${c.name}')">Join Club</button>
+        </div>
+      </div>`;
+      }).join('');
+    }
+
+    function joinClub(id, name) {
+      Gamification.addXP(20);
+      document.getElementById('xpPill').textContent = Gamification.getXP() + ' XP';
+      showToast(`Joined ${name}! +20 XP 🎉`, 'success');
+    }
+
+    // ─── CHAT ─────────────────────────────────────────────────
+    function appendMsg(role, content) {
+      const area = document.getElementById('chatArea');
+      const div = document.createElement('div');
+      div.className = 'msg ' + role;
+      const avatar = role === 'ai' ? '🤖' : initials;
+      div.innerHTML = `
+    <div class="msg-avatar">${avatar}</div>
+    <div class="msg-bubble">${content}</div>`;
+      area.appendChild(div);
+      area.scrollTop = area.scrollHeight;
+      return div;
+    }
+
+    function appendTyping() {
+      const area = document.getElementById('chatArea');
+      const div = document.createElement('div');
+      div.className = 'msg ai typing';
+      div.innerHTML = `
+    <div class="msg-avatar">🤖</div>
+    <div class="msg-bubble">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+    </div>`;
+      area.appendChild(div);
+      area.scrollTop = area.scrollHeight;
+      return div;
+    }
+
+    // Welcome message
+    appendMsg('ai', `Hey <strong>${user.name.split(' ')[0]}</strong>! 👋 I'm Kai, your AI campus guide. Ask me anything — events this week, clubs matching your interests, upcoming deadlines, or how to earn more XP!`);
+
+    async function sendMessage() {
+      const inp = document.getElementById('chatInput');
+      const text = inp.value.trim();
+      if (!text) return;
+      inp.value = '';
+
+      appendMsg('user', text);
+      Gamification.addXP(2);
+      document.getElementById('xpPill').textContent = Gamification.getXP() + ' XP';
+
+      const typing = appendTyping();
+      const reply = await buildAIReply(text);
+      typing.remove();
+      appendMsg('ai', reply);
+
+      // n8n trigger for AI chat activity
+      await n8nTrigger('ai_chat', { email: user.email, query: text });
+    }
+
+    function sendQuick(text) {
+      document.getElementById('chatInput').value = text;
+      sendMessage();
+    }
+
+    function handleKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    }
+
+    // AI Reply builder (calls n8n webhook)
+    async function buildAIReply(msg) {
+      const N8N_WEBHOOK_URL = "http://localhost:5678/webhook-test/hush";
+
+      try {
+        const response = await fetch(N8N_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: msg })
+        });
+
+        if (!response.ok) throw new Error("Network response was not ok");
+
+        const data = await response.json();
+        return data.reply || "I'm sorry, I couldn't process that.";
+      } catch (error) {
+        console.error("Error connecting to n8n:", error);
+        return "❌ Connection Error. Is n8n running and CORS enabled?";
+      }
+    }
+
+    // ─── LOGOUT ───────────────────────────────────────────────
+    function logout() {
+      Auth.clear();
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+
+</html>

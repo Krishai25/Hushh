@@ -1,0 +1,16 @@
+{
+    "C001": [
+        {
+            "id": "C001_20260302002749",
+            "title": "Code Debug",
+            "category": "Coding",
+            "description": "We will give u code , so u have to debug it",
+            "venue": "Geetham hall",
+            "date": "2026-03-02",
+            "time": "01:00:00",
+            "club_name": "Coding Club",
+            "club_id": "C001",
+            "registered_count": 2
+        }
+    ]
+}

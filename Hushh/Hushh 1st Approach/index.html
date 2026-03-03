@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kai Campus Hub — Your College, Supercharged</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  .hero {
+    min-height: calc(100vh - 65px);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 60px 24px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 50% at 50% 40%, rgba(108,99,255,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 0.8rem; font-weight: 600; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--accent);
+    border: 1px solid rgba(108,99,255,0.3);
+    padding: 6px 16px; border-radius: 50px;
+    margin-bottom: 32px; display: inline-block;
+    background: rgba(108,99,255,0.08);
+    animation: fadeUp 0.5s ease;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-weight: 800; line-height: 1.05;
+    margin-bottom: 24px;
+    animation: fadeUp 0.5s 0.1s ease both;
+  }
+  .hero h1 .line2 {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    font-size: 1.15rem; color: var(--text-dim);
+    max-width: 520px; line-height: 1.7; margin-bottom: 48px;
+    animation: fadeUp 0.5s 0.2s ease both;
+  }
+  .hero-ctas {
+    display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+    animation: fadeUp 0.5s 0.3s ease both;
+  }
+  .role-cards {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    max-width: 720px; width: 100%; margin: 80px auto 0;
+    padding: 0 24px; animation: fadeUp 0.5s 0.4s ease both;
+  }
+  .role-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 32px;
+    text-align: left; text-decoration: none; color: var(--text);
+    transition: var(--transition); position: relative; overflow: hidden;
+  }
+  .role-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent, var(--accent-color, rgba(108,99,255,0.06)));
+    opacity: 0; transition: var(--transition);
+  }
+  .role-card:hover::before { opacity: 1; }
+  .role-card:hover { border-color: var(--border-hover, var(--accent)); transform: translateY(-4px); }
+  .role-card.student { --accent-color: rgba(108,99,255,0.1); --border-hover: var(--accent); }
+  .role-card.leader  { --accent-color: rgba(255,107,157,0.1); --border-hover: var(--accent2); }
+  .role-icon {
+    font-size: 2.4rem; margin-bottom: 16px; display: block;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+  }
+  .role-card h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+  .role-card p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 20px; }
+  .role-card .role-actions { display: flex; gap: 8px; }
+
+  .features {
+    max-width: 960px; margin: 0 auto; padding: 100px 24px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  .feature-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 28px;
+  }
+  .feature-icon { font-size: 2rem; margin-bottom: 12px; }
+  .feature-card h4 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+  .feature-card p { font-size: 0.875rem; color: var(--text-dim); line-height: 1.6; }
+
+  .stats-bar {
+    max-width: 720px; margin: 0 auto; padding: 0 24px 80px;
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 2px;
+    background: var(--border); border-radius: var(--radius); overflow: hidden;
+  }
+  .stat { background: var(--surface); padding: 28px 24px; text-align: center; }
+  .stat-val { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--accent); }
+  .stat-label { font-size: 0.85rem; color: var(--text-dim); margin-top: 4px; }
+
+  .footer {
+    border-top: 1px solid var(--border); padding: 24px;
+    text-align: center; color: var(--text-muted); font-size: 0.85rem;
+  }
+  @media(max-width: 600px) {
+    .role-cards { grid-template-columns: 1fr; }
+    .stats-bar  { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="index.html">⚡ Kai Campus Hub</a>
+  <div class="nav-links">
+    <a href="student-login.html">Student Login</a>
+    <a href="club-leader.html">Club Leader</a>
+    <a href="student-signup.html" class="btn-nav">Join Free</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-eyebrow">🎓 Built for College Life</div>
+  <h1>
+    Your campus,<br>
+    <span class="line2">reimagined.</span>
+  </h1>
+  <p>Discover events, join clubs, earn badges, and stay connected — all powered by an AI assistant that knows what you care about.</p>
+  <div class="hero-ctas">
+    <a href="student-signup.html" class="btn btn-primary">Get Started Free &rarr;</a>
+    <a href="#features" class="btn btn-secondary">See Features</a>
+  </div>
+</section>
+
+<div class="role-cards">
+  <a class="role-card student" href="student-signup.html">
+    <span class="role-icon">🎒</span>
+    <h3>I'm a Student</h3>
+    <p>Discover events that match your interests, earn XP streaks, and chat with your AI campus guide.</p>
+    <div class="role-actions">
+      <span class="btn btn-primary btn-sm">Sign Up</span>
+      <a href="student-login.html" class="btn btn-secondary btn-sm" onclick="event.stopPropagation()">Login</a>
+    </div>
+  </a>
+  <a class="role-card leader" href="club-leader.html">
+    <span class="role-icon">📣</span>
+    <h3>I'm a Club Leader</h3>
+    <p>Post events, manage your club, track registrations, and reach the right students instantly.</p>
+    <div class="role-actions">
+      <span class="btn btn-sm" style="background:var(--accent2);color:#fff;">Dashboard →</span>
+    </div>
+  </a>
+</div>
+
+<div id="features"></div>
+<section class="features">
+  <div class="feature-card anim-fade-up anim-delay-1">
+    <div class="feature-icon">🤖</div>
+    <h4>AI Campus Assistant</h4>
+    <p>Ask anything: "What events suit me?" or "Which clubs match my vibe?" — get instant personalised answers.</p>
+  </div>
+  <div class="feature-card anim-fade-up anim-delay-2">
+    <div class="feature-icon">🔥</div>
+    <h4>Streaks & Badges</h4>
+    <p>Earn XP for logging in, attending events, and engaging. Unlock badges like Champion and Explorer.</p>
+  </div>
+  <div class="feature-card anim-fade-up anim-delay-3">
+    <div class="feature-icon">📅</div>
+    <h4>Smart Calendar</h4>
+    <p>Weekly and monthly views filtered to your interests. Never miss a deadline or event again.</p>
+  </div>
+  <div class="feature-card anim-fade-up anim-delay-1">
+    <div class="feature-icon">💬</div>
+    <h4>One-Tap Join</h4>
+    <p>WhatsApp, Telegram, Discord — join club community chats in one click, no copy-pasting links.</p>
+  </div>
+  <div class="feature-card anim-fade-up anim-delay-2">
+    <div class="feature-icon">📊</div>
+    <h4>Club Dashboards</h4>
+    <p>Leaders get real-time stats: registrations, member growth, and exportable participant lists.</p>
+  </div>
+  <div class="feature-card anim-fade-up anim-delay-3">
+    <div class="feature-icon">📬</div>
+    <h4>Smart Nudges</h4>
+    <p>Inactive for a few days? Get a friendly email showing what your peers have been up to — powered by n8n.</p>
+  </div>
+</section>
+
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-val">50+</div>
+    <div class="stat-label">Active Clubs</div>
+  </div>
+  <div class="stat">
+    <div class="stat-val">200+</div>
+    <div class="stat-label">Events Monthly</div>
+  </div>
+  <div class="stat">
+    <div class="stat-val">3K+</div>
+    <div class="stat-label">Students Engaged</div>
+  </div>
+</div>
+
+<footer class="footer">
+  Made with ⚡ for curious students · Kai Campus Hub 2025
+</footer>
+
+<script src="utils.js"></script>
+</body>
+</html>

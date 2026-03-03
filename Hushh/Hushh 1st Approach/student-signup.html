@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Student Signup — Kai Campus Hub</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+  .auth-wrap {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    padding: 40px 16px;
+  }
+  .auth-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 40px;
+    width: 100%; max-width: 520px;
+    animation: fadeUp 0.5s ease;
+  }
+  .auth-header { margin-bottom: 32px; }
+  .auth-header .back { 
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--text-muted); font-size: 0.85rem; text-decoration: none;
+    margin-bottom: 20px; transition: var(--transition);
+  }
+  .auth-header .back:hover { color: var(--text); }
+  .auth-logo { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+  .auth-header h2 { font-family: 'Syne', sans-serif; font-size: 1.7rem; font-weight: 800; }
+  .auth-header p  { color: var(--text-dim); font-size: 0.9rem; margin-top: 6px; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  .progress-dots { display: flex; gap: 6px; margin-bottom: 28px; }
+  .dot { width: 28px; height: 4px; border-radius: 2px; background: var(--border); transition: var(--transition); }
+  .dot.active { background: var(--accent); }
+  .dot.done  { background: var(--accent3); }
+
+  .password-wrap { position: relative; }
+  .password-wrap input { padding-right: 44px; }
+  .toggle-pw {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--text-muted); cursor: pointer;
+    font-size: 1.1rem; padding: 0;
+  }
+
+  .xp-preview {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+  }
+  .xp-preview .icon { font-size: 1.6rem; }
+  .xp-preview p { font-size: 0.85rem; color: var(--text-dim); }
+  .xp-preview strong { color: var(--accent4); }
+
+  @media(max-width: 480px) { .row2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-header">
+      <a class="back" href="index.html">← Back to home</a>
+      <div class="auth-logo">⚡ Kai Campus Hub</div>
+      <h2>Create your account</h2>
+      <p>Join your campus community and start earning XP.</p>
+    </div>
+
+    <div class="progress-dots">
+      <div class="dot active" id="dot1"></div>
+      <div class="dot" id="dot2"></div>
+      <div class="dot" id="dot3"></div>
+    </div>
+
+    <div id="alert" class="alert"></div>
+
+    <form id="signupForm">
+      <!-- Step 1: Basic Info -->
+      <div id="step1">
+        <div class="row2">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" id="firstName" placeholder="Arjun" required/>
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" id="lastName" placeholder="Sharma" required/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>College Email</label>
+          <input type="email" id="email" placeholder="arjun@college.edu" required/>
+        </div>
+        <div class="form-group">
+          <label>Class / Year</label>
+          <select id="classYear" required>
+            <option value="">Select year</option>
+            <option>1st Year</option>
+            <option>2nd Year</option>
+            <option>3rd Year</option>
+            <option>4th Year</option>
+            <option>Postgraduate</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-primary btn-full" onclick="goStep(2)">Continue →</button>
+      </div>
+
+      <!-- Step 2: Interests -->
+      <div id="step2" style="display:none">
+        <div class="section-label">Pick your interests (select all that apply)</div>
+        <div class="interests-wrap" id="interestsWrap"></div>
+        <div style="margin-top:20px"></div>
+        <div class="row2">
+          <button type="button" class="btn btn-secondary" onclick="goStep(1)">← Back</button>
+          <button type="button" class="btn btn-primary" onclick="goStep(3)">Continue →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Password -->
+      <div id="step3" style="display:none">
+        <div class="xp-preview">
+          <div class="icon">🎉</div>
+          <div>
+            <p>Complete signup to earn <strong>+50 XP</strong> and your first badge!</p>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Create Password</label>
+          <div class="password-wrap">
+            <input type="password" id="password" placeholder="Min. 8 characters" required/>
+            <button type="button" class="toggle-pw" onclick="togglePw('password')">👁</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <div class="password-wrap">
+            <input type="password" id="confirmPassword" placeholder="Repeat password" required/>
+            <button type="button" class="toggle-pw" onclick="togglePw('confirmPassword')">👁</button>
+          </div>
+        </div>
+        <div class="row2" style="margin-bottom:16px">
+          <button type="button" class="btn btn-secondary" onclick="goStep(2)">← Back</button>
+          <button type="submit" class="btn btn-primary" id="submitBtn">Create Account 🚀</button>
+        </div>
+        <p class="text-center text-muted" style="font-size:.85rem">
+          Already have an account? <a href="student-login.html" class="text-accent">Log in</a>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="utils.js"></script>
+<script>
+const INTERESTS = [
+  'Technology','Coding','AI / ML','Design','Photography','Music','Art',
+  'Debate','Leadership','Business','Startup','Finance','Writing',
+  'Film','Sports','Fitness','Travel','Research','Gaming','Culture'
+];
+
+let selectedInterests = [];
+
+// Build chips
+const wrap = document.getElementById('interestsWrap');
+INTERESTS.forEach(i => {
+  const chip = document.createElement('div');
+  chip.className = 'interest-chip';
+  chip.textContent = i;
+  chip.onclick = () => {
+    chip.classList.toggle('selected');
+    if (chip.classList.contains('selected')) selectedInterests.push(i);
+    else selectedInterests = selectedInterests.filter(x => x !== i);
+  };
+  wrap.appendChild(chip);
+});
+
+function goStep(n) {
+  if (n === 2) {
+    const fn = document.getElementById('firstName').value.trim();
+    const ln = document.getElementById('lastName').value.trim();
+    const em = document.getElementById('email').value.trim();
+    const cy = document.getElementById('classYear').value;
+    if (!fn || !ln || !em || !cy) return showAlert('Please fill in all fields.', 'error');
+    if (!em.includes('@')) return showAlert('Please enter a valid email.', 'error');
+  }
+  if (n === 3 && selectedInterests.length === 0) {
+    return showAlert('Pick at least one interest.', 'error');
+  }
+  [1,2,3].forEach(s => {
+    document.getElementById('step'+s).style.display = s === n ? 'block' : 'none';
+    const dot = document.getElementById('dot'+s);
+    dot.className = 'dot' + (s < n ? ' done' : s === n ? ' active' : '');
+  });
+  hideAlert();
+}
+
+function togglePw(id) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function showAlert(msg, type) {
+  const a = document.getElementById('alert');
+  a.className = 'alert alert-' + (type === 'error' ? 'error' : 'success') + ' show';
+  a.textContent = msg;
+}
+function hideAlert() {
+  const a = document.getElementById('alert');
+  a.className = 'alert';
+}
+
+document.getElementById('signupForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  // 1. Configuration - Replace this with your n8n Test Webhook URL
+  const N8N_WEBHOOK_URL = 'http://localhost:5678/webhook-test/signupstud';
+
+  const pw = document.getElementById('password').value;
+  const cpw = document.getElementById('confirmPassword').value;
+  
+  if (pw !== cpw) return showAlert('Passwords do not match.', 'error');
+  if (pw.length < 8) return showAlert('Password must be at least 8 characters.', 'error');
+
+  const btn = document.getElementById('submitBtn');
+  btn.innerHTML = '<span class="spinner"></span> Creating...';
+  btn.disabled = true;
+
+  const payload = {
+    action: 'signup',
+    name: document.getElementById('firstName').value.trim() + ' ' + document.getElementById('lastName').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    classYear: document.getElementById('classYear').value,
+    interests: selectedInterests, // Sending as array for better Google Sheet handling
+    password: pw,
+  };
+
+  try {
+    // 2. The Direct Fetch Call
+    const response = await fetch(N8N_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      // Success Logic
+      Gamification.addXP(50);
+      Gamification.updateStreak();
+      Auth.save({ 
+        name: payload.name, 
+        email: payload.email, 
+        interests: selectedInterests, 
+        classYear: payload.classYear 
+      });
+      
+      showToast('Account created! Details sent to n8n 🎉', 'success');
+      setTimeout(() => window.location.href = 'chat.html', 1200);
+    } else {
+      const errorData = await response.text();
+      showAlert('Server error: ' + errorData, 'error');
+    }
+  } catch (err) {
+    console.error('Webhook Error:', err);
+    showAlert('Could not connect to n8n. Check CORS settings.', 'error');
+  } finally {
+    btn.innerHTML = 'Create Account 🚀';
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

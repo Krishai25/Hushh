@@ -1,0 +1,26 @@
+{
+    "23ad056@kpriet.ac.in": {
+        "name": "sri akshaya",
+        "password": "123",
+        "interests": [
+            "Code Debug"
+        ],
+        "registered_events": [
+            {
+                "id": "C001_20260302002749",
+                "title": "Code Debug",
+                "date": "2026-03-02",
+                "venue": "Geetham hall",
+                "registered_at": "2026-03-03 17:13:19.221455"
+            }
+        ]
+    },
+    "23cs019@kpriet.ac.in": {
+        "name": "yuga",
+        "password": "123",
+        "interests": [
+            "Code Debug"
+        ],
+        "registered_events": []
+    }
+}

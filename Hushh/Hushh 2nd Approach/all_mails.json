@@ -1,0 +1,22 @@
+{
+    "APPROVED_STUDENTS": {
+        "akshayarsri@gmail.com": {
+            "status": "sent"
+        },
+        "yugaragavendhar@gmail.com": {
+            "status": "sent"
+        },
+        "23ad056@kpriet.ac.in": {
+            "status": "registered"
+        },
+        "23cs019@kpriet.ac.in": {
+            "status": "sent"
+        },
+        "arunadharinis@gmail.com": {
+            "status": "sent"
+        },
+        "sriakshaya216@gmail.com": {
+            "status": "sent"
+        }
+    }
+}
